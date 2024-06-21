@@ -37,17 +37,17 @@ const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
       animationIsFinished = true;
       
       t1.to(camera.position,{
-        x:50,
-        y:50,
-        z:80,
+        x:30,
+        y:30,
+        z:50,
         delay: 1,
-        duration: 6,
+        duration: 4,
         ease: "power2.in",
         onUpdate: ()=>{
           // camera.lookAt(0, -5, 0);
           console.log(`x: ${Math.round(camera.position.x)}, y: ${Math.round(camera.position.y)}, z: ${Math.round(camera.position.z)}`);
         }
-      })
+      }, '>-1')
       .to(camera.position,{
         x:0,
         y:-5,
