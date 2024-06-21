@@ -148,6 +148,7 @@ span.text-red {
 }
 
 .hero-banner-canvas {
+  position: absolute;
   z-index: 10;
   border-radius: 15px;
   height: 500px;
