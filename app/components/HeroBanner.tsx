@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
-import { url } from "inspector";
+import { gsap } from "gsap/gsap-core";
 
 
 const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
@@ -27,9 +27,42 @@ const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
     const camera = new THREE.PerspectiveCamera(75, bannerSize.width / bannerSize.height, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(bannerSize.width, bannerSize.height);
-    console.log(bannerSize)
+    camera.position.z = 300;
+    
+    const t1 = gsap.timeline();
+    const duration = 1;
+    const ease = 'none';
+    let animationIsFinished = false;
+    if(!animationIsFinished){
+      animationIsFinished = true;
+      
+      t1.to(camera.position,{
+        x:50,
+        y:50,
+        z:80,
+        delay: 1,
+        duration: 6,
+        ease: "power2.in",
+        onUpdate: ()=>{
+          // camera.lookAt(0, -5, 0);
+          console.log(`x: ${Math.round(camera.position.x)}, y: ${Math.round(camera.position.y)}, z: ${Math.round(camera.position.z)}`);
+        }
+      })
+      .to(camera.position,{
+        x:0,
+        y:-5,
+        z:50,
+        duration: 3,
+        ease: "power2.inout",
+        onUpdate: ()=>{
+          // camera.lookAt(0, -5, 0);
+          console.log(`x: ${Math.round(camera.position.x)}, y: ${Math.round(camera.position.y)}, z: ${Math.round(camera.position.z)}`);
+        }
+      })
+      
 
-    camera.position.z = 50;
+    }
+
 
     const modelLoader = new GLTFLoader();
     modelLoader.load('/headphones.glb', (gltf) => {
@@ -45,6 +78,8 @@ const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
     controls.enablePan = false;
     controls.enableZoom = false;
     controls.autoRotate = true;
+    // controls.minPolarAngle = -Math.PI / 1.9;
+    // controls.maxPolarAngle = Math.PI / 1.9;
     controls.autoRotateSpeed = 2;
 
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -95,23 +130,7 @@ const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
           </div>
         </div>
       </div>
-
-
-
-
-
     </>
-
-
-
-
-
-
-
-
-
-
-
   );
 };
 
