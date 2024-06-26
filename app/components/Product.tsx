@@ -16,7 +16,7 @@ type props = {
 const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
   product.model = models[0];
   const { _id, _type, name, slug, price, details, image, model } = product;
-  const firstDivRef = useRef<HTMLDivElement | null>(null);
+  const sceneContainerRef = useRef<HTMLDivElement | null>(null);
   const productRootDivRef = useRef<HTMLDivElement | null>(null);
   const initialized = useRef(false);
 
@@ -26,7 +26,7 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
 
     const scene = new THREE.Scene();
 
-    scene.userData.element = firstDivRef.current;
+    scene.userData.element = sceneContainerRef.current;
     contentRef.current?.appendChild(productRootDivRef?.current);
 
     // Compute model's bounding box
@@ -48,7 +48,7 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
     camera.position.y = 0;
 
     // Set up controls
-    const controls = new OrbitControls(camera, firstDivRef.current);
+    const controls = new OrbitControls(camera, sceneContainerRef.current);
     controls.enablePan = false;
     controls.enableZoom = false;
     scene.userData.controls = controls;
@@ -68,7 +68,7 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
       <Link className="link" href={`/product/${slug.current}`}>
         <div  className="product-card">
           <div
-            ref={firstDivRef}
+            ref={sceneContainerRef}
             className="product-image"
           ></div>
           <div className="product-name">{name}</div>
