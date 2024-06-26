@@ -826,12 +826,15 @@ span.text-red {
   }
 
 /*************************************************************************************************************************************/
+
+}
 .product-container {
   outline: rgb(255, 0, 0);
   margin-top: 15px;
   overflow: auto;
   max-height: 70vh;
   padding: 20px 10px;
+  position: relative;
 }
 
 .product-image {
@@ -846,6 +849,7 @@ span.text-red {
 
 #content {
   outline: rgb(0, 255, 30);
+  border-color: #000000;
   position: absolute;
   display: flex;
   flex-direction: row; 
@@ -868,4 +872,3 @@ span.text-red {
     height: 100%;
     z-index: 10; /* Ensure canvas is below the content */
   }
-}

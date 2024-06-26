@@ -17,7 +17,7 @@ const Carousel: React.FC<ProductDetailsProps> = ({ productList }) => {
   const scenes = useRef<THREE.Scene[]>([]);
 
   useEffect(() => {
-    const paths = ['/model1.glb', '/model2.glb'];
+    const paths = ['/model4.glb', '/model5.glb'];
 
     const fetchData = async () => {
       try {

@@ -22,10 +22,7 @@ export default async function Home() {
         <h2>Best Seller Products</h2>
         <p>There are many variation packages</p>
         <div className='products-container'>
-          {/* {products?.map((product: ProductType) => <Product key={product._id}{...product} />)} */}
-        <Carousel productList={products}/>
-
-
+          <Carousel productList={products} />
         </div>
       </div>
 
