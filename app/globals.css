@@ -827,6 +827,7 @@ span.text-red {
 
 /*************************************************************************************************************************************/
 .product-container {
+  outline: rgb(255, 0, 0);
   margin-top: 15px;
   overflow: auto;
   max-height: 70vh;
@@ -834,6 +835,7 @@ span.text-red {
 }
 
 .product-image {
+  outline: rgb(34, 0, 255);
   border-radius: 15px;
   background-color: #ebebeb;
   transform: scale(1, 1);
@@ -843,6 +845,7 @@ span.text-red {
 }
 
 #content {
+  outline: rgb(0, 255, 30);
   position: absolute;
   display: flex;
   flex-direction: row; 
@@ -857,6 +860,7 @@ span.text-red {
 }
 
   #canvas {
+    outline: rgb(255, 187, 0);
     position: absolute;
     left: 0;
     top: 0;

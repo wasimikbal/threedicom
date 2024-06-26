@@ -26,10 +26,7 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
 
     const scene = new THREE.Scene();
 
-    const sceneDiv: HTMLDivElement = document.createElement('div');
-    sceneDiv.className = 'scene-div';
-    scene.userData.element = sceneDiv;
-    firstDivRef.current?.appendChild(sceneDiv);
+    scene.userData.element = firstDivRef.current;
     contentRef.current?.appendChild(productRootDivRef?.current);
 
     // Compute model's bounding box
@@ -51,7 +48,7 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
     camera.position.y = 0;
 
     // Set up controls
-    const controls = new OrbitControls(camera, sceneDiv);
+    const controls = new OrbitControls(camera, firstDivRef.current);
     controls.enablePan = false;
     controls.enableZoom = false;
     scene.userData.controls = controls;
@@ -67,7 +64,7 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
   }, []);
   return (
     <div>
-      <div ref={productRootDivRef}>
+      <div  ref={productRootDivRef}>
       <Link className="link" href={`/product/${slug.current}`}>
         <div  className="product-card">
           <div
