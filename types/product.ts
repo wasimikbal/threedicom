@@ -1,4 +1,5 @@
-
+import { MutableRefObject } from 'react';
+import * as three from 'three'
 export interface Image {
     _key: string;
     _type: string;
@@ -22,5 +23,6 @@ export interface Image {
     availableQty: number;
     details: string;
     image: Image[];
+    model: three.Object3D
   }
   

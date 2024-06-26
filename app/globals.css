@@ -122,12 +122,7 @@ span.text-red {
 .product-card:hover {
   transform: scale(1.1, 1.1);
 }
-.product-image {
-  border-radius: 15px;
-  background-color: #ebebeb;
-  transform: scale(1, 1);
-  transition: transform 0.5s ease;
-}
+
 
 .product-name {
   font-weight: 500;
@@ -346,12 +341,7 @@ span.text-red {
 .cancel {
   cursor: pointer;
 }
-.product-container {
-  margin-top: 15px;
-  overflow: auto;
-  max-height: 70vh;
-  padding: 20px 10px;
-}
+
 .product {
   display: flex;
   gap: 30px;
@@ -424,6 +414,7 @@ span.text-red {
   transform: scale(1.1, 1.1);
 }
 .product-detail-container {
+  position: relative;
   display: flex;
   gap: 40px;
   margin: 40px;
@@ -766,5 +757,111 @@ span.text-red {
   .btn-container {
     width: 300px;
     margin: auto;
+  }
+
+  
+
+
+  .list-item {
+    display: inline-block;
+    margin: 1em;
+    padding: 1em;
+    box-shadow: 1px 2px 4px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .list-item > div:nth-child(1) {
+    width: 200px;
+    height: 200px;
+  }
+
+  .list-item > div:nth-child(2) {
+    color: #888;
+    font-family: sans-serif;
+    font-size: large;
+    width: 200px;
+    margin-top: 0.5em;
+  }
+
+  .popup-container {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+  }
+
+  .open-product-popup {
+    border-radius: 8px;
+    background-color: #ebebeb;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+  }
+
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 2rem;
+    cursor: pointer;
+    color: white;
+  }
+
+  .popup-canvas {
+    margin: 20px;
+    border: 1px solid #000000;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+  }
+
+  .scene-div{
+    width: 200px;
+    height: 200px;
+  }
+
+/*************************************************************************************************************************************/
+.product-container {
+  margin-top: 15px;
+  overflow: auto;
+  max-height: 70vh;
+  padding: 20px 10px;
+}
+
+.product-image {
+  border-radius: 15px;
+  background-color: #ebebeb;
+  transform: scale(1, 1);
+  width: 200px;
+  height: 200px;
+  transition: transform 0.5s ease;
+}
+
+#content {
+  position: absolute;
+  display: flex;
+  flex-direction: row; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 11; /* Ensure content is above the canvas */
+  padding: 3em 0 0 0; /* Adjust as needed */
+  overflow: hidden; /* Prevent overflow */
+  pointer-events: none; /* Allow canvas interactions if needed */
+}
+
+  #canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* Ensure canvas is below the content */
   }
 }

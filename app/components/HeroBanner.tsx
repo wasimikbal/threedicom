@@ -20,46 +20,56 @@ const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
 
   const canvasRef = useRef(null);
   const [model, setModel] = useState<THREE.Object3D | null>(null);
-
   useEffect(() => {
     const bannerSize = { width: canvasRef.current.clientWidth, height: canvasRef.current.clientHeight }
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, bannerSize.width / bannerSize.height, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current, antialias: true, alpha: true });
     renderer.setSize(bannerSize.width, bannerSize.height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    window.addEventListener('resize', () => {
+      bannerSize.width = canvasRef.current.clientWidth;
+      bannerSize.height = canvasRef.current.clientHeight;
+      camera.aspect = bannerSize.width / bannerSize.height;
+      console.log(camera.aspect);
+      // camera.updateProjectionMatrix();
+      // renderer.setSize(bannerSize.width, bannerSize.height);
+    });
+
     camera.position.z = 300;
-    
+
     const t1 = gsap.timeline();
     const duration = 1;
     const ease = 'none';
     let animationIsFinished = false;
-    if(!animationIsFinished){
+    if (!animationIsFinished) {
       animationIsFinished = true;
-      
-      t1.to(camera.position,{
-        x:30,
-        y:30,
-        z:50,
+
+      t1.to(camera.position, {
+        x: 30,
+        y: 30,
+        z: 50,
         delay: 1,
         duration: 4,
         ease: "power2.in",
-        onUpdate: ()=>{
+        onUpdate: () => {
           // camera.lookAt(0, -5, 0);
-          console.log(`x: ${Math.round(camera.position.x)}, y: ${Math.round(camera.position.y)}, z: ${Math.round(camera.position.z)}`);
+          // console.log(`x: ${Math.round(camera.position.x)}, y: ${Math.round(camera.position.y)}, z: ${Math.round(camera.position.z)}`);
         }
       }, '>-1')
-      .to(camera.position,{
-        x:0,
-        y:-5,
-        z:50,
-        duration: 3,
-        ease: "power2.inout",
-        onUpdate: ()=>{
-          // camera.lookAt(0, -5, 0);
-          console.log(`x: ${Math.round(camera.position.x)}, y: ${Math.round(camera.position.y)}, z: ${Math.round(camera.position.z)}`);
-        }
-      })
-      
+        .to(camera.position, {
+          x: 0,
+          y: -5,
+          z: 50,
+          duration: 3,
+          ease: "power2.inout",
+          onUpdate: () => {
+            // camera.lookAt(0, -5, 0);
+            // console.log(`x: ${Math.round(camera.position.x)}, y: ${Math.round(camera.position.y)}, z: ${Math.round(camera.position.z)}`);
+          }
+        })
+
 
     }
 
@@ -72,7 +82,7 @@ const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
       scene.add(loadedModel);
       setModel(loadedModel);
     });
-    
+
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.enablePan = false;
@@ -89,13 +99,13 @@ const HeroBanner: React.FC<Banner> = ({ ...bannerProps }) => {
     const skyboxTextureUrl = '/room.hdr';
     const hdriLoader = new RGBELoader().setDataType(THREE.HalfFloatType)
     hdriLoader.load(skyboxTextureUrl, function (texture) {
-      
+
       texture.mapping = THREE.EquirectangularReflectionMapping;
       texture.minFilter = THREE.LinearFilter;
       texture.magFilter = THREE.LinearFilter;
 
       scene.environment = texture;
-    
+
     });
 
     const animate = () => {
