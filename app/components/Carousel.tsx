@@ -96,6 +96,38 @@ const Carousel: React.FC<ProductDetailsProps> = ({ productList }) => {
           <Product key={product._id} product={product} scenesRef={scenes} contentRef={contentRef} models={models} />
         ))
       }
+
+<style jsx>{`
+#content {
+  background-color: aqua;
+  position: absolute;
+  display: flex;
+  gap: 3em;
+  margin: 10px;
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;
+  overflow-x: scroll;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 380px;
+  z-index: 11; /* Ensure content is above the canvas */
+  padding: 3em; /* Adjust as needed */
+  pointer-events: none; /* Allow canvas interactions if needed */
+}
+
+  #canvas {
+    outline: rgb(255, 187, 0);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* Ensure canvas is below the content */
+  }
+      `}</style>
+
     </>
   );
 };

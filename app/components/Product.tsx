@@ -64,7 +64,7 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
   }, []);
   return (
     <div>
-      <div  ref={productRootDivRef}>
+      <div className="product-root"  ref={productRootDivRef}>
       <Link className="link" href={`/product/${slug.current}`}>
         <div  className="product-card">
           <div
@@ -77,6 +77,48 @@ const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
       </Link>
       </div>
       
+
+      <style jsx>{`
+.product-root {
+  flex: 0 0 auto
+  width: 300px;
+  height: 100%;
+  background-color: #6b7c63;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-card {
+  cursor: pointer;
+  transform: scale(1, 1);
+  transition: transform 0.5s ease;
+  color: #324d67;
+}
+.product-card:hover {
+  transform: scale(1.1, 1.1);
+}
+
+
+.product-name {
+  font-weight: 500;
+}
+.product-price {
+  font-weight: 800;
+  margin-top: 6px;
+  color: black;
+}
+
+.product-image {
+  outline: rgb(34, 0, 255);
+  border-radius: 15px;
+  background-color: #ebebeb;
+  transform: scale(1, 1);
+  width: 200px;
+  height: 200px;
+  transition: transform 0.5s ease;
+}
+      `}</style>
     </div>
   );
 };
