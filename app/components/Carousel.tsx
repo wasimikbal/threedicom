@@ -4,17 +4,23 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { loadModels } from '@/utils/getModels';
 import { Product as ProductType } from '@/types/product';
-import Product from '../components/Product'; // Ensure this import is correct
+import ProductComponent from '../components/Product'; // Updated import
 
-interface ProductDetailsProps {
+type ProductDetailsProps = {
   productList: ProductType[];
 }
+
+type sceneObject = {
+  scene: THREE.Scene;
+  element: HTMLDivElement;
+  renderFun: (renderer: THREE.WebGLRenderer, time: number, rect: any) => void
+};
 
 const Carousel: React.FC<ProductDetailsProps> = ({ productList }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [models, setModels] = useState<THREE.Object3D[] | null>(null);
-  const scenes = useRef<THREE.Scene[]>([]);
+  const scenesRef = useRef<sceneObject[]>([]);
 
   useEffect(() => {
     const paths = ['/model4.glb', '/model5.glb'];
@@ -37,52 +43,57 @@ const Carousel: React.FC<ProductDetailsProps> = ({ productList }) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+    const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     renderer.setClearColor(0xffffff, 1);
     renderer.setPixelRatio(window.devicePixelRatio);
 
-    const animate = () => {
-      requestAnimationFrame(animate);
-      // console.log(scenes.current)
-      scenes.current.forEach(scene => {
-        const { element, camera, controls } = scene.userData;
-        const rect = element.getBoundingClientRect();
-        console.log(window.innerWidth + ":" + window.innerHeight)
+    const animate = (time) => {
 
-        // Skip if the scene is off-screen
-        if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
-          return;
-        }
-
-        const width = rect.width;
-        const height = rect.height;
-        const left = rect.left;
-        const top = rect.top;
-
-        renderer.setViewport(left, top, width, height);
-        renderer.setScissor(left, top, width, height);
+      for (const { scene, element, renderFun } of scenesRef.current) {
+        resizeRendererToDisplaySize(renderer);
         renderer.setScissorTest(true);
 
-        controls.update();
-        renderer.render(scene, camera);
-      });
+        // const transform = `translateY(${window.scrollY}px)`;
+        // renderer.domElement.style.transform = transform;
+
+        const rect = element.getBoundingClientRect();
+        const { left, right, top, bottom, width, height } = rect;
+
+        const isOffscreen =
+          bottom < 0 ||
+          top > renderer.domElement.clientHeight ||
+          right < 0 ||
+          left > renderer.domElement.clientWidth;
+        if (!isOffscreen) {
+
+          const positiveYUpBottom = renderer.domElement.clientHeight - bottom;
+          renderer.setScissor(left, positiveYUpBottom, width, height);
+          renderer.setViewport(left, positiveYUpBottom, width, height);
+
+          renderFun(renderer, time, rect);
+
+        }
+      }
+
+      requestAnimationFrame(animate);
     };
 
-    animate();
+    requestAnimationFrame(animate);
 
-    const handleResize = () => {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      scenes.current.forEach(scene => {
-        const camera = scene.userData.camera;
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-      });
-    };
+    function resizeRendererToDisplaySize(renderer) {
 
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
+      const canvas = renderer.domElement;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const needResize = canvas.width !== width || canvas.height !== height;
+      if (needResize) {
+        renderer.setSize(width, height, false);
+      }
+      return needResize;
+
+    }
+
+
   }, [models]);
 
   if (!models || models.length < 1) return <h1>Loading ...</h1>;
@@ -90,44 +101,47 @@ const Carousel: React.FC<ProductDetailsProps> = ({ productList }) => {
   return (
     <>
       <canvas id="canvas" ref={canvasRef}></canvas>
-      <div id="content" ref={contentRef}></div>
-      {
-        productList.map((product: ProductType) => (
-          <Product key={product._id} product={product} scenesRef={scenes} contentRef={contentRef} models={models} />
-        ))
-      }
+      <div id="content" ref={contentRef}>
+        {productList.map((product: ProductType) => (
+          <ProductComponent
+            key={product._id}
+            product={product}
+            scenesRef={scenesRef}
+            contentRef={contentRef}
+            models={models}
+          />
+        ))}
+      </div>
 
-<style jsx>{`
-#content {
-  background-color: aqua;
-  position: absolute;
-  display: flex;
-  gap: 3em;
-  margin: 10px;
-  flex-direction: row;
-  justify-content: center; 
-  align-items: center;
-  overflow-x: scroll;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 380px;
-  z-index: 11; /* Ensure content is above the canvas */
-  padding: 3em; /* Adjust as needed */
-  pointer-events: none; /* Allow canvas interactions if needed */
-}
+      <style jsx>{`
+        #content {
+          position: absolute;
+          display: flex;
+          gap: 3em;
+          margin: 10px;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          overflow-x: scroll;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 380px;
+          padding: 3em; /* Adjust as needed */
+          pointer-events: none; /* Allow canvas interactions if needed */
+        }
 
-  #canvas {
-    outline: rgb(255, 187, 0);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10; /* Ensure canvas is below the content */
-  }
+        #canvas {
+          outline: rgb(255, 187, 0);
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          display: block;
+          z-index: 1; /* Ensure canvas is below the content */
+        }
       `}</style>
-
     </>
   );
 };

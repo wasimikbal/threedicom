@@ -2,125 +2,113 @@
 import React, { MutableRefObject, useEffect, useRef } from "react";
 import { Product as ProductType } from "@/types/product";
 import Link from "next/link";
-import { urlFor } from "@/lib/client";
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-type props = {
+type Props = {
   product: ProductType,
-  scenesRef?: MutableRefObject<THREE.Scene[]>,
+  scenesRef?: MutableRefObject<{}[]>,
   contentRef?: MutableRefObject<HTMLDivElement>,
-  models?: THREE.Object3D
+  models?: THREE.Object3D[]
 }
 
-const Product: React.FC<props> = ({product, scenesRef, contentRef, models}) => {
+type sceneObject = {
+  scene: THREE.Scene;
+  element: HTMLDivElement;
+  renderFun: (renderer: THREE.WebGLRenderer, time: number, rect: any) => void
+};
+
+const ProductComponent: React.FC<Props> = ({ product, scenesRef, contentRef, models }) => {
+  const { _id, name, slug, price } = product;
   product.model = models[0];
-  const { _id, _type, name, slug, price, details, image, model } = product;
-  const sceneContainerRef = useRef<HTMLDivElement | null>(null);
-  const productRootDivRef = useRef<HTMLDivElement | null>(null);
+  product.model.rotation.set(45, 0, 0)
+  // product.model.scale.set(2,2,2)
+  const model = product.model;
+  const sceneContainerRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
+    if (!initialized.current && models && models.length > 0) {
+      initialized.current = true;
 
-    const scene = new THREE.Scene();
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x909090);
+      scene.add(model);
+      const element = sceneContainerRef.current;
 
-    scene.userData.element = sceneContainerRef.current;
-    contentRef.current?.appendChild(productRootDivRef?.current);
+      // Set up camera
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+      const box = new THREE.Box3().setFromObject(model);
+      const boxSize = new THREE.Vector3();
+      box.getSize(boxSize);
+      const distance = Math.max(boxSize.x, boxSize.y, boxSize.z) * 2;
+      const boxCenter = new THREE.Vector3();
+      box.getCenter(boxCenter);
+      camera.position.set(boxCenter.x, boxCenter.y, boxCenter.z + distance);
+      camera.lookAt(boxCenter);
 
-    // Compute model's bounding box
-    const box = new THREE.Box3().setFromObject(model);
-    const boxSize = new THREE.Vector3();
-    box.getSize(boxSize);
-    const distance = (boxSize.x + boxSize.y + boxSize.z) / 3;
-    const boxCOG = new THREE.Vector3();
-    box.getCenter(boxCOG);
 
-    // Set up camera
-    const camera = new THREE.PerspectiveCamera(75, 200 / 200);
-    camera.position.z = distance * 1.5;
-    camera.position.y = boxCOG.y;
-    camera.lookAt(boxCOG);
-    scene.userData.camera = camera;
+      //Light
+      const light = new THREE.DirectionalLight('#FFFFFF', 1)
+      camera.add(light);
 
-    model.position.set(0, 0, 0);
-    camera.position.y = 0;
 
-    // Set up controls
-    const controls = new OrbitControls(camera, sceneContainerRef.current);
-    controls.enablePan = false;
-    controls.enableZoom = false;
-    scene.userData.controls = controls;
+      // Set up controls
+      const controls = new OrbitControls(camera, element);
+      controls.enableDamping = true; // Optional smooth camera movements
+      controls.dampingFactor = 0.25;
+      controls.enableZoom = false;
 
-    // Add model and lights to scene
-    scene.add(model);
-    scene.add(new THREE.HemisphereLight(0xaaaaaa, 0x444444, 3));
-    const light = new THREE.DirectionalLight(0xffffff, 1.5);
-    light.position.set(1, 1, 1);
-    scene.add(light);
+      scene.add(model);
 
-    scenesRef.current.push(scene);
-  }, []);
+      const renderFun = (renderer, time, rect) => {
+        model.rotation.y = time * .001;
+        camera.aspect = rect.width / rect.height;
+        camera.updateProjectionMatrix();
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      scenesRef?.current.push({ scene, element, renderFun });
+    }
+  }, [models]);
+
   return (
     <div>
-      <div className="product-root"  ref={productRootDivRef}>
-      <Link className="link" href={`/product/${slug.current}`}>
-        <div  className="product-card">
-          <div
-            ref={sceneContainerRef}
-            className="product-image"
-          ></div>
-          <div className="product-name">{name}</div>
-          <div className="product-price">AED {price}</div>
-        </div>
-      </Link>
-      </div>
-      
+      <div ref={sceneContainerRef} className="product-image"></div>
+      <div className="product-name">{name}</div>
+      <div className="product-price">AED {price}</div>
 
       <style jsx>{`
-.product-root {
-  flex: 0 0 auto
-  width: 300px;
-  height: 100%;
-  background-color: #6b7c63;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.product-card {
-  cursor: pointer;
-  transform: scale(1, 1);
-  transition: transform 0.5s ease;
-  color: #324d67;
-}
-.product-card:hover {
-  transform: scale(1.1, 1.1);
-}
-
-
-.product-name {
-  font-weight: 500;
-}
-.product-price {
-  font-weight: 800;
-  margin-top: 6px;
-  color: black;
-}
-
-.product-image {
-  outline: rgb(34, 0, 255);
-  border-radius: 15px;
-  background-color: #ebebeb;
-  transform: scale(1, 1);
-  width: 200px;
-  height: 200px;
-  transition: transform 0.5s ease;
-}
+        .product-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: transform 0.3s ease;
+          width: 200px;
+          margin: 0 10px;
+        }
+        .product-card:hover {
+          transform: translateY(-5px);
+        }
+        .product-image {
+          width: 200px;
+          height: 200px;
+          border-radius: 10px;
+        }
+        .product-name {
+          margin-top: 10px;
+          font-weight: 600;
+        }
+        .product-price {
+          font-weight: 800;
+          color: black;
+        }
       `}</style>
     </div>
   );
 };
 
-export default Product;
+export default ProductComponent;

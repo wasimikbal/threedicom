@@ -21,11 +21,8 @@ export default async function Home() {
       <div className="products-heading">
         <h2>Best Seller Products</h2>
         <p>There are many variation packages</p>
-        <div className='products-container'>
-          
-        </div>
         <div className='_carousel-container'>
-<Carousel productList={products} />
+          <Carousel productList={products} />
         </div>
       </div>
 

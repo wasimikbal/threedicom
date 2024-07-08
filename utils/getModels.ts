@@ -14,7 +14,6 @@ const loadModels = async (modelPaths) => {
             console.log(error);
         }
     }
-    console.log(models);
     return models;
 }
 
