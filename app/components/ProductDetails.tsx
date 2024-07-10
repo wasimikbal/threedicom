@@ -7,6 +7,7 @@ import { urlFor } from '@/lib/client';
 import { useProductsContext } from '@/context/StateContext';
 import { client } from '@/lib/client';
 import ProductDetailsPopup from './ProductDetailsPopup';
+import ConfigDialog from './ConfigDialog';
 
 interface ProductDetailsProps {
   product: ProductType;
@@ -16,9 +17,11 @@ interface ProductDetailsProps {
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product, productList }) => {
   const { name, details, price, image, availableQty } = product;
   const [index, setIndex] = useState<number>(0);
-  const [showPopup, setShowPopup] = useState(false);
-  const popupContainerRef = useRef<HTMLDivElement | null>(null)
   const { cartItems, qty, inqQty, decQty, onAddToCart, setShowCart } = useProductsContext();
+
+  const [is3DDialogOpen, setIs3DDialogOpen] = useState(false);
+  const openDialog = () => setIs3DDialogOpen(true);
+  const closeDialog = () => setIs3DDialogOpen(false);
 
 
 
@@ -45,14 +48,13 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, productList })
   }
 
   const handleOpenPopup = () => {
-    setShowPopup(true);
+    console.log('clicked');
   }
 
   return (
     <>
-      <ProductDetailsPopup setShowPopup={setShowPopup} />
       <div>
-
+        {is3DDialogOpen && (<ConfigDialog isOpen={is3DDialogOpen} onClose={closeDialog} />)}
         <div className="product-detail-container">
           <div>
             <div className="image-container">
@@ -69,7 +71,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, productList })
                   />
                 ))
                 }
-                <button className='open-product-popup' onClick={handleOpenPopup}>3D</button>
+                <button className='open-product-popup' onClick={openDialog}>3D</button>
               </>
 
 
@@ -113,9 +115,9 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, productList })
           <h2>You may also like</h2>
           <div className="marquee">
             <div className="maylike-products-container track">
-              {productList.map((item) => (
+              {/* {productList.map((item) => (
                 <Product key={item._id} product={item} />
-              ))}
+              ))} */}
             </div>
           </div>
         </div>

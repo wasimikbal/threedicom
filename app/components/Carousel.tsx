@@ -53,9 +53,9 @@ const Carousel: React.FC<ProductDetailsProps> = ({ productList }) => {
         resizeRendererToDisplaySize(renderer);
         renderer.setScissorTest(true);
 
-        // const transform = `translateY(${window.scrollY}px)`;
-        // renderer.domElement.style.transform = transform;
-
+        const transform = `translateY(${window.scrollY}px)`;
+        renderer.domElement.style.transform = transform;
+        
         const rect = element.getBoundingClientRect();
         const { left, right, top, bottom, width, height } = rect;
 
