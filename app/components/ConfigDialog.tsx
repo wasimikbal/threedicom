@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+import {CSS2DRenderer, CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js'
 
 const ConfigDialog = ({ isOpen, onClose}) => {
 
@@ -22,6 +23,16 @@ const ConfigDialog = ({ isOpen, onClose}) => {
     }, [isOpen]);
 
     useEffect(() => {
+
+        const createCPointMesh = (name, x, y, z) => {
+            const geo = new THREE.SphereGeometry(0.1);
+            const mat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, y, z);
+            mesh.name = name;
+            return mesh;
+          };
+
         if(!canvasRef.current) return;
         const canvas: HTMLCanvasElement = canvasRef.current;
         const bannerSize = { width: canvas.clientWidth, height: canvas.clientHeight }
@@ -44,6 +55,8 @@ const ConfigDialog = ({ isOpen, onClose}) => {
             scene.add(loadedModel);
             setModel(loadedModel);
         });
+
+        createCPointMesh('', 0,0,0);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
@@ -68,12 +81,13 @@ const ConfigDialog = ({ isOpen, onClose}) => {
 
         });
 
-
         const animate = () => {
             controls.update();
             renderer.render(scene, camera);
             requestAnimationFrame(animate);
         };
+
+        
 
         animate();
 

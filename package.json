@@ -22,7 +22,8 @@
     "react-icons": "^5.2.1",
     "stripe": "^15.9.0",
     "styled-components": "^6.1.11",
-    "three": "^0.165.0"
+    "three": "^0.165.0",
+    "troika-three-text": "^0.49.1"
   },
   "devDependencies": {
     "@types/node": "^20",
